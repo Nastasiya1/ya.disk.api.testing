@@ -28,15 +28,32 @@ public class Main {
     public static void main(String[] args) {
         String[] folderNames = {
                 "MyImages",
-                "Standard"};
+                "Animals"};
 
         createFolder(folderNames[0]);
         createFolder(folderNames[1]);
 
         String uploadPath = getPathToUpload("MyImages/Cat.jpg");
         uploadFile(uploadPath, new File("smart_cat.jpg"));
+
+        uploadPath = getPathToUpload("MyImages/Cat2.jpg");
+        uploadFile(uploadPath, new File("evenSmarterCat.jpg"));
+
+        moveFile(new File("Cat.jpg"));
+        removeFile(folderNames[0], "Cat2.jpg");
     }
 
+    private static void removeFile(String folderName, String fileName) {
+        HttpDelete request = new HttpDelete("https://cloud-api.yandex.net/v1/disk/resources?path=/" + folderName + "/" + fileName);
+        request.setHeader("Authorization", token);
+        getHttpResponse(request);
+    }
+
+    private static void moveFile(File file) {
+        HttpPost request = new HttpPost("https://cloud-api.yandex.net/v1/disk/resources/move?from=/MyImages/" + file + "&path=/Animals/" + file);
+        request.setHeader("Authorization", token);
+        getHttpResponse(request);
+    }
 
     private static void uploadFile(String uploadPath, File file) {
         HttpPut request = new HttpPut(uploadPath);
